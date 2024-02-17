@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Pestguard</title>
+
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Icon Logo-->
+  <link rel="icon" type="image/png" href="../../img/" />
+
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css" />
+  <link rel="stylesheet" href="/static/css/fontAwesome.css" />
+  <link rel="stylesheet" href="/static/css/hero-slider.css" />
+  <link rel="stylesheet" href="/static/css/owl-carousel.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+
+  <link href="https://fonts.googleapis.com/css?family=Raleway:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/static/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+
+</head>
+<style>
+  #map{
+    width: 650px;
+    height: 450px;
+  }
+        @media (max-width: 500px) {
+            #map {
+              width: 350px;
+              height: 250px;
+            }
+        }
+</style>
+<body>
+  <!-- PRE LOADER -->
+  <!-- <section class="preloader">
+    <div class="spinner"></div>
+  </section> -->
+  <!-- Header -->
+{% include "header.html" %}
+
+  <div class="banner-container">
+
+      <video autoplay loop muted playsinline class="banner" id="background-video">
+        <source src="/static/video/videoplayback.mp4" type="video/mp4">
+      </video>
+
+
+      <div class="centered-content">
+        <h1 class="font-monospace">"WELCOME TO PESTGUARD"</h1>
+        <h2>Discover, Protect, Thrive: Your Pest Solution</h2>
+        <h3>
+          Do you want to explore real-time detection?
+        </h3>
+        <a href="{% url 'detection' %}" class="button1">Get Started</a> <!-- New Button -->
+      </div>
+
+
+  </div>
+
+  <main>
+      <section class="our-services">
+        <div class="container">
+          {% for about in about %}
+          <div class="row">
+            <div class="col-md-7">
+              <div class="left-content">
+                <br/>
+                <h4>About us</h4>
+                
+                <p>
+                  {{about.detail}}
+                </p>
+                <div class="blue-button">
+                  <a href="{% url 'about' %}">Discover More</a>
+                </div>
+
+                <br />
+              </div>
+            </div>
+            <div class="col-md-5">
+
+              <img src="{{about.image.url}}" class="img-fluid" alt="" style="width: 350px; height: 350px;" />
+            </div>
+          </div>
+          {% endfor  %}
+        </div>
+      </section>
+
+
+    <section class="featured-places">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+              <span>Pest Library</span>
+              <h2>Discover more about pest.</h2>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="row">
+          {% for pest in pests %}
+            <div class="col-md-4 col-sm-6 col-xs-12">
+              <div class="featured-item">
+                <div class="thumb">
+                  <div class="thumb-img">
+                    <img src="{{pest.img.url}}" alt="" style="width: 350px; height: 250px;" />
+                  </div>
+
+
+                </div>
+
+                <div class="down-content" style="width: 350px; height: 250px;">
+                  <h4>
+                    {{pest.name}}
+                  </h4>
+
+                  <p>
+                    {{pest.info}}
+                  </p>
+
+                  <div class="text-button">
+                    <a href="{% url 'pestdetail' pest.id %}">Read More</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="popular-places" id="popular">
+
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="section-heading">
+
+                <span>MAP</span>
+                <h2>
+                  Pest Hotspots Map
+                </h2>
+
+              </div>
+            </div>
+
+            <div class="col-md-7">
+              <div id="map"></div>
+              <!-- Left column for the iframe -->
+              <!-- <iframe src=" https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d181210.43205072728!2d122.0770467250041!3d7.014824373675269!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sph!4v1699694577461!5m2!1sen!2sph" width="550" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
+            </div>
+            <div class="col-md-5">
+              <!-- Right column for the text (paragraph element) -->
+              <p>
+                The Pest Hotspots Map is a valuable tool for anyone seeking to manage and mitigate 
+                pest-related challenges. By providing comprehensive information on pest infestations, 
+                the map empowers users to take proactive steps in pest prevention and control. 
+                Whether you are a farmer, gardener, or homeowner, this resource can help you better 
+                understand and address the pest-related issues specific to your area, ultimately promoting 
+                healthier and more resilient ecosystems. Pest infestations can be a significant concern for 
+                agriculture, horticulture, and even residential areas. Understanding where pests tend to 
+                gather is crucial for effective pest management and control. The Pest Hotspots Map provides 
+                valuable information on regions and areas where pest populations are known to cluster, 
+                helping growers, homeowners, and pest control professionals make informed 
+                decisions and take proactive measures to protect crops, gardens, and properties.
+
+              </p>
+            </div>
+          </div>
+        </div>
+
+    </section>
+
+
+
+    <!-- <section class="popular-places" id="popular">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+              <span>SARAP NA MGA SUDAN</span>
+              <h2>MGA EXOTIC FOOD</h2>
+
+            </div>
+          </div>
+        </div>
+
+
+
+        KATUNG NING SCROLL SCROLL
+    <div class="owl-carousel owl-theme">
+      <?php
+      $query = mysqli_query($con, "select * from home3");
+      while ($row = mysqli_fetch_assoc($query)) {
+
+      ?>
+
+        <div class="item popular-item">
+          <div class="thumb">
+            <img src="upload_img/<?php echo $row['home3_img']; ?>" alt="" style="width: 350px; height: 250px;" />
+            <div class="text-content">
+              <h4>
+                <?php echo $row['home3_title']; ?>
+              </h4>
+              <span>
+                <?php echo $row['home3_info']; ?>
+              </span>
+            </div>
+            <div class="plus-button">
+              <a href="testimonials.php"><i class="fa fa-plus"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <?php
+      }
+        ?>
+
+
+    </div>
+    </div>
+    </section> -->
+
+    <div>
+
+    </div>
+
+  </main>
+
+{% include 'footer.html' %}
+
+  <script src="/static/js/map.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript"></script>
+  <script>
+    window.jQuery ||
+      document.write(
+        '<script src="/static/js/vendor/jquery-1.11.2.min.js"><\/script>'
+      );
+  </script>
+
+  <script src="/static/js/vendor/bootstrap.min.js"></script>
+
+  <script src="/static/js/datepicker.js"></script>
+  <script src="/static/js/plugins.js"></script>
+  <script src="/static/js/main.js"></script>
+
+</body>
+</html>

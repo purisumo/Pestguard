@@ -1,0 +1,36 @@
+<?php
+// Assuming you have already established a database connection
+include('./dbconnect/connection.php');
+
+if (isset($_POST['message'])) {
+
+    function validate($data){
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
+
+    $message = validate($_POST['message']);
+
+    if (empty($message) ) {
+        header("Location: index.html");
+    }else {
+
+        $sql = "INSERT INTO test(message) VALUES('$message')";
+        $res = mysqli_query($con, $sql);
+
+        if ($res) {
+            echo "Your message was sent successfully!";
+        }else {
+            echo "Your message could not be sent!";
+        }
+    }
+
+}else {
+    header("Location: index.html");
+}
+
+mysqli_close($con);
+?>

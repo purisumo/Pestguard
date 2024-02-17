@@ -1,0 +1,16 @@
+<?php
+if (isset($_POST['btn-send'])) {
+    $email = $_POST["email"];
+    $subject = $_POST["subject"];
+    $message = $_POST["message"];
+
+    $toEmail = "pestguard1203@gmail.com";
+
+    $headers = "From: $email";
+
+    if (mail($toEmail, $subject, $message, $headers)) {
+        header("location: contact.php");
+    } else {
+        echo "Sorry, something went wrong. Please try again later.";
+    }
+}

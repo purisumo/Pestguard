@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Pestgaurd</title>
+
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css" />
+  <link rel="stylesheet" href="/static/css/fontAwesome.css" />
+  <link rel="stylesheet" href="/static/css/hero-slider.css" />
+  <link rel="stylesheet" href="/static/css/owl-carousel.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+
+  <link href="https://fonts.googleapis.com/css?family=Raleway:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
+
+  <script src="/static/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+</head>
+
+<body>
+  <!-- Header -->
+  {% include 'header.html' %}
+
+  <main>
+    <section class="popular-places">
+      <div class="container">
+        <div class="contact-content">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="left-content">
+                <div class="row">
+                  <form id="myForm" action="" method="post">
+
+                    <div class="col-md-12">
+                      <fieldset>
+                        <input name="email" type="email" class="form-control" id="email" placeholder="Email..." required="" />
+                      </fieldset>
+                    </div>
+                    <div class="col-md-12">
+                      <fieldset>
+                        <input name="subject" type="text" class="form-control" id="subject" placeholder="Subject..." required="" />
+                      </fieldset>
+                    </div>
+                    <div class="col-md-12">
+                      <fieldset>
+                        <textarea name="message" rows="6" class="form-control" id="message" placeholder="Your message..." required=""></textarea>
+                      </fieldset>
+                    </div>
+                    <div class="col-md-12">
+                      <fieldset>
+                        <div class="blue-button">
+                          <button type="submit" name="btn-send" class="btn" onclick="alert('✅ Form submitted')">Send Message</button>
+                        </div>
+
+                      </fieldset>
+
+
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="right-content">
+                <div class="row">
+                  <div class="col-md-12">
+                    {% for contact in contact %}
+                      <div class="content">
+                        <p>
+                        {{contact.info}}
+                        </p>
+                        <ul>
+                          <li>
+                            <span>Phone:</span><a href="#">
+                              {{contact.number}}
+                            </a>
+                          </li>
+                          <li>
+                            <span>Email:</span><a href="#">
+                              {{contact.email}}
+                            </a>
+                          </li>
+                          <li>
+                            <span>Address:</span><i class="fa fa-map-marker"></i>
+                            {{contact.address}}
+                          </li>
+                        </ul>
+                      </div>
+                      {% endfor %}
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  {% include 'footer.html' %}
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript"></script>
+  <script>
+    window.jQuery ||
+      document.write(
+        '<script src="/static/s/vendor/jquery-1.11.2.min.js"><\/script>'
+      );
+  </script>
+
+  <script src="/static/js/vendor/bootstrap.min.js"></script>
+
+  <script src="/static/js/datepicker.js"></script>
+  <script src="/static/js/plugins.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+
+</html>
