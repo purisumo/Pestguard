@@ -70,7 +70,7 @@
 
         // Send imageDataURL to the Django backend using AJAX
         sendDataToBackend(resizedImageData, url);
-      }, 700);
+      }, 100);
     }
 
     // Inside the sendDataToBackend function

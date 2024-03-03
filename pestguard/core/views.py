@@ -10,7 +10,7 @@ from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.db.models import Q
 
-from ultralytics import YOLO
+# from ultralytics import YOLO
 import yaml
 import torch
 import cv2
@@ -20,6 +20,9 @@ import math
 import json 
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
+# from inference import InferencePipeline
+# # Import the built in render_boxes sink for visualizing results
+# from inference.core.interfaces.stream.sinks import render_boxes
 
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
@@ -134,24 +137,31 @@ def send(request):
 def search(request):
     query = request.GET.get('query', '')
     filter_option = request.GET.get('filter', '')
-
+    queries = None
     # Define the fields you want to search in
     search_fields = [
-        'name__iexact', 'info__iexact', 'prevention__iexact',
-        'description__iexact', 'target__iexact', 'location__iexact',
+        'name__iexact', 'info__icontains', 'prevention__icontains',
+        'description__icontains', 'target__icontains', 'location__icontains',
     ]
+    
+    # Create a Q object for the name field with the query
+    name_query = Q(name__iexact=query)
+    if Pest.objects.filter(name_query).exists():
+        queries = name_query
 
-    # Create a Q object for each field with the query
-    queries = Q()
-    for field in search_fields:
-        queries |= Q(**{field: query})
+        if filter_option:
+            queries &= Q(location__icontains=filter_option.lower())  
 
+    else:
+        # Create a Q object for the other fields with the query
+        queries = Q()
+        for field in search_fields:
+            queries |= Q(**{field: query})
 
-    if filter_option:
-        queries &= Q(location__icontains=filter_option.lower())  
-
-    pests = Pest.objects.filter(queries)    
-
+        if filter_option:
+            queries &= Q(location__icontains=filter_option.lower())  
+            
+    pests = Pest.objects.filter(queries)       
     if not pests:
         messages.info(request, ':( Sorry Keyword not Found Please Try Again')
 
@@ -161,67 +171,71 @@ def search(request):
 ####################################################################################
                                     # YOLO #
 ####################################################################################
+# @csrf_exempt
+# def generate_frames(request):
 
-@csrf_exempt
-def generate_frames(request):
-    # object classes
-    classNames = ["asian long horned beetle", "bertha armyworm",
-                    "brown marmorated stink bug", "brown planthopper","chinch bug", "cockroach", 
-                    "colorado potato beetle", "diaphorina-citri", "earwig", "emerald-ash-borer", "fungus-gnats",
-                    "grasshopper", "gypsy-moth", "japanese-beetle", "lice", "mealy-bug", "rats", "slater", "snail",
-                    "taro-hornworm", "termites", "thrips", "tobacco-whitefly", "weevil", "wire-worm",
-                ]
-    model = YOLO("yolo-Weights/best.pt")
+#     return HttpResponse("Invalid request", status=400)
 
-    # Placeholder values, replace with your actual values
-    confidence_threshold = 0.5
-    detected_class = ''
-    texts = ''
-    if request.method == 'POST':
-        try:
-            image_data_url = request.POST.get('image', '')
-            # Convert image data URL to OpenCV image format
-            img_data = image_data_url.split(',')[1]
-            img_bytes = base64.b64decode(img_data)
-            img_array = np.frombuffer(img_bytes, dtype=np.uint8)
-            img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+# @csrf_exempt
+# def generate_frames(request):
+#     # object classes
+#     classNames = ["asian long horned beetle", "bertha armyworm",
+#                     "brown marmorated stink bug", "brown planthopper","chinch bug", "cockroach", 
+#                     "colorado potato beetle", "diaphorina-citri", "earwig", "emerald-ash-borer", "fungus-gnats",
+#                     "grasshopper", "gypsy-moth", "japanese-beetle", "lice", "mealy-bug", "rats", "slater", "snail",
+#                     "taro-hornworm", "termites", "thrips", "tobacco-whitefly", "weevil", "wire-worm",
+#                 ]
+#     model = YOLO("yolo-Weights/best.pt")
 
-            # Process the image using YOLO model
-            results = model(img, stream=True)
-            boxes = []
+#     # Placeholder values, replace with your actual values
+#     confidence_threshold = 0.5
+#     detected_class = ''
+#     texts = ''
+#     if request.method == 'POST':
+#         try:
+#             image_data_url = request.POST.get('image', '')
+#             # Convert image data URL to OpenCV image format
+#             img_data = image_data_url.split(',')[1]
+#             img_bytes = base64.b64decode(img_data)
+#             img_array = np.frombuffer(img_bytes, dtype=np.uint8)
+#             img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
-            for r in results:
-                for box in r.boxes:
-                    confidence = box.conf[0]
+#             # Process the image using YOLO model
+#             results = model(img, stream=True)
+#             boxes = []
 
-                    if confidence >= confidence_threshold:
-                        x1, y1, x2, y2 = map(int, box.xyxy[0])
-                        boxes.append({'x': x1, 'y': y1, 'width': x2 - x1, 'height': y2 - y1})
+#             for r in results:
+#                 for box in r.boxes:
+#                     confidence = box.conf[0]
+
+#                     if confidence >= confidence_threshold:
+#                         x1, y1, x2, y2 = map(int, box.xyxy[0])
+#                         boxes.append({'x': x1, 'y': y1, 'width': x2 - x1, 'height': y2 - y1})
                         
-                        cls = int(box.cls[0])
-                        detected_class = classNames[cls]
+#                         cls = int(box.cls[0])
+#                         detected_class = classNames[cls]
 
-                        org = [x1, y1]
-                        font = cv2.FONT_HERSHEY_SIMPLEX
-                        fontScale = 0.75
-                        color = (255, 0, 0)
-                        thickness = 2
+#                         org = [x1, y1]
+#                         font = cv2.FONT_HERSHEY_SIMPLEX
+#                         fontScale = 0.75
+#                         color = (255, 0, 0)
+#                         thickness = 2
 
-                        texts = f'{detected_class} {confidence:.2%}'
+#                         texts = f'{detected_class} {confidence:.2%}'
                 
-            # Print the result after processing all boxes
-            print(texts)
+#             # Print the result after processing all boxes
+#             print(texts)
 
-            _, frame = cv2.imencode('.jpg', img)
-            frame_bytes = frame.tobytes()
+#             _, frame = cv2.imencode('.jpg', img)
+#             frame_bytes = frame.tobytes()
             
-            data = {"texts": texts, "boxes": boxes}
-            return JsonResponse(data)
+#             data = {"texts": texts, "boxes": boxes}
+#             return JsonResponse(data)
 
-        except Exception as e:
-            print(f"Error processing image: {e}")
+#         except Exception as e:
+#             print(f"Error processing image: {e}")
 
-    return HttpResponse("Invalid request", status=400)
+#     return HttpResponse("Invalid request", status=400)
 
 
 #           yield (b'--frame\r\n'
@@ -234,8 +248,8 @@ def generate_frames(request):
 #         data = {"response": detected_class}
 #         return JsonResponse(data)
 
-def video_feed(request):
-    return StreamingHttpResponse(generate_frames(request), content_type='multipart/x-mixed-replace; boundary=frame')
+# def video_feed(request):
+#     return StreamingHttpResponse(generate_frames(request), content_type='multipart/x-mixed-replace; boundary=frame')
 
 # def generate_frames(request):
 #     cap = cv2.VideoCapture(0)

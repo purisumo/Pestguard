@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'core',
     'registration',
     'sslserver',
+    'widget_tweaks',
+
     'channels',
-    'widget_tweaks'
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,14 @@ TEMPLATES = [
     },
 ]
 
+CHANNEL_LAYERS = {
+    "default":{
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "host": [{'*', 8000}],
+        }
+    }
+}
 WSGI_APPLICATION = 'pestguard.wsgi.application'
 
 
@@ -159,3 +168,5 @@ DEFAULT_FROM_EMAIL = ''
 EMAIL_SUBJECT_PREFIX = '[] '
 
 X_FRAME_OPTIONS = 'ALLOWALL'
+
+ASGI_APPLICATION = 'pestguard.asgi.application'

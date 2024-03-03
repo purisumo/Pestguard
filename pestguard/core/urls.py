@@ -16,8 +16,8 @@ urlpatterns = [
     #################YOLO#######################
 
     # path('loadData/', loadData, name='loadData'),
-    path('video_feed/', video_feed, name='video_feed'),
-    path('generate_frames/', generate_frames, name='generate_frames'),
+    # path('video_feed/', video_feed, name='video_feed'),
+    # path('generate_frames/', generate_frames, name='generate_frames'),
 
     #################ADMIN#######################
 
